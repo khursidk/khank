@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #weather { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Weather App</h1>
+    <form id="weather-form">
+        <input type="text" id="city-input" placeholder="Enter city name" required>
+        <button type="submit">Get Weather</button>
+    </form>
+    <div id="weather"></div>
+
+    <script>
+        async function fetchWeather(city) {
+            try {
+                const response = await fetch(`/api/weather?city=${city}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById("weather").innerText = "City not found or error with API";
+                } else {
+                    const weatherInfo = `
+                        <h2>Weather in ${data.location.name}</h2>
+                        <p>Temperature: ${data.current.temperature} °C</p>
+                        <p>Conditions: ${data.current.weather_descriptions[0]}</p>
+                    `;
+                    document.getElementById("weather").innerHTML = weatherInfo;
+                }
+            } catch (error) {
+                document.getElementById("weather").innerText = "Error fetching data";
+            }
+        }
+
+        document.getElementById("weather-form").onsubmit = (e) => {
+            e.preventDefault();
+            const city = document.getElementById("city-input").value;
+            fetchWeather(city);
+        };
+    </script>
+</body>
+</html>
